@@ -140,7 +140,10 @@ def _handle_run(args: dict) -> None:
         print(f"Failed to read pins file {e}")
         sys.exit(1)
 
-    process = subprocess.run([pins[tag]], capture_output=True, check=True)
+    shell = True if sys.platform == "win32" else False
+    process = subprocess.run(
+        pins[tag], capture_output=True, check=True, shell=shell
+    )
 
     if process.stderr:
         for line in process.stderr.decode("utf-8").splitlines():
