@@ -172,7 +172,10 @@ def _read_pins() -> dict:
 
 def _write_pins(pins: dict) -> None:
     # _write_pins {{{
-    with open(PINS_FILE, "w") as file:
+    scriptdir = Path(__file__).parent
+    pinsfile = Path(scriptdir, PINS_FILE)
+
+    with open(pinsfile, "w") as file:
         for tag, invocation in pins.items():
             file.write(f"{tag}\n")
             file.write(f"{invocation}\n")
