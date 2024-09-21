@@ -41,3 +41,8 @@ Example for `.bashrc`:
 clipin() { python3 <PROJECT PATH>/clipin.py "$@" ;}
 ```
 
+Example for Powershell`$PROFILE`:
+```sh
+clipin() { python <PROJECT PATH>\clipin.py @args }
+```
+
