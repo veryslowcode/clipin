@@ -28,7 +28,7 @@ def main() -> None:
         case Command.Add:
             _handle_add(args)
         case Command.List:
-            _handle_list(args)
+            _handle_list()
         case Command.Delete:
             _handle_delete(args)
         case Command.Run:
@@ -68,6 +68,21 @@ def _configure_args() -> dict:
     # }}}
 
 
+def _display_header() -> None:
+    # _display_header {{{
+    offset = 2
+    width = 40
+    name = "CLI Pin"
+    command = "[tag] => [invocation]"
+
+    adjw = len(name) + len(command) + offset
+
+    print("=" * width)
+    print(f"{name}{' ' * (width - adjw)}{command}")
+    print("=" * width)
+    # }}}
+
+
 def _handle_add(args: dict) -> None:
     # _handle_add {{{
     assert args.tag is not None, "--tag required for add command"
@@ -85,6 +100,8 @@ def _handle_add(args: dict) -> None:
 
     try:
         _write_pins(pins)
+        _handle_list()
+        print("\nTag added...")
     except Exception as e:
         print(f"Failed to write pins file {e}")
         sys.exit(1)
@@ -107,13 +124,15 @@ def _handle_delete(args: dict) -> None:
 
     try:
         _write_pins(pins)
+        _handle_list()
+        print("\nTag deleted...")
     except Exception as e:
         print(f"Failed to write pins file {e}")
         sys.exit(1)
     # }}}
 
 
-def _handle_list(args: dict) -> None:
+def _handle_list() -> None:
     # _handle_list {{{
     try:
         pins = _read_pins()
@@ -121,8 +140,7 @@ def _handle_list(args: dict) -> None:
         print(f"Failed to read pins file {e}")
         sys.exit(1)
 
-    print("[tag] => [invocation]")
-    print("=" * 40)
+    _display_header()
     for tag, invocation in pins.items():
         print(f"{tag} => {invocation}")
     # }}}
@@ -140,9 +158,11 @@ def _handle_run(args: dict) -> None:
         print(f"Failed to read pins file {e}")
         sys.exit(1)
 
-    shell = True if sys.platform == "win32" else False
+    _display_header()
+    print(f"Running: {pins[tag]}\n\n")
+
     process = subprocess.run(
-        pins[tag], capture_output=True, check=True, shell=shell
+        pins[tag], capture_output=True, check=True, shell=True
     )
 
     if process.stderr:
